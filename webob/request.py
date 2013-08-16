@@ -108,7 +108,7 @@ class BaseRequest(object):
     _charset = None
 
     def __init__(self, environ, charset=None, unicode_errors=None,
-                 decode_param_names=None, **kw):
+                 decode_param_names=None, decode_error_handling='strict', **kw):
 
         if type(environ) is not dict:
             raise TypeError(
@@ -138,6 +138,7 @@ class BaseRequest(object):
                 "req.decode(charset)``" % charset
 
             )
+        self._decode_error_handling = decode_error_handling
         d = self.__dict__
         d['environ'] = environ
         if kw:
@@ -164,7 +165,7 @@ class BaseRequest(object):
             encoding = getattr(self, encattr)
             if encoding in _LATIN_ENCODINGS: # shortcut
                 return val
-            return bytes_(val, 'latin-1').decode(encoding)
+            return bytes_(val, 'latin-1').decode(encoding, errors=self._decode_error_handling)
     else:
         def encget(self, key, default=NoDefault, encattr=None):
             val = self.environ.get(key, default)
@@ -175,7 +176,7 @@ class BaseRequest(object):
             if encattr is None:
                 return val
             encoding = getattr(self, encattr)
-            return val.decode(encoding)
+            return val.decode(encoding, errors=self._decode_error_handling)
 
     def encset(self, key, val, encattr=None):
         if encattr:
@@ -203,7 +204,10 @@ class BaseRequest(object):
         if charset != self.charset:
             raise DeprecationWarning("Use req = req.decode(%r)" % charset)
 
-    def decode(self, charset=None, errors='strict'):
+    def decode(self, charset=None, errors=None):
+        if errors is None:
+            errors = self._decode_error_handling
+
         charset = charset or self.charset
         if charset == 'UTF-8':
             return self

@@ -1607,6 +1607,15 @@ class TestBaseRequest(unittest.TestCase):
         inst = self._makeOne({'a':val})
         self.assertEqual(inst.encget('a'), val)
 
+    def test_encget_with_invalid_bytes(self):
+        if PY3:
+            val = b'\xe2\x88'.decode('latin-1')
+        else:
+            val = b'\xe2\x88'
+        inst = self._makeOne({'a':val}, decode_error_handling='replace')
+        self.assertEqual(inst.encget('a', encattr='url_encoding'),
+                         u'\ufffd')
+
     def test_relative_url(self):
         inst = self._blankOne('/%C3%AB/c')
         result = inst.relative_url('a')
