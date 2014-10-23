@@ -1,6 +1,6 @@
 from setuptools import setup
 
-version = '1.2.3moriyoshi0'
+version = '1.4'
 
 testing_extras = ['nose', 'coverage']
 
@@ -40,6 +40,9 @@ You may install the `in-development version of WebOb
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3.2",
         "Programming Language :: Python :: 3.3",
+        "Programming Language :: Python :: 3.4",
+        "Programming Language :: Python :: Implementation :: CPython",
+        "Programming Language :: Python :: Implementation :: PyPy",
     ],
     keywords='wsgi request web http',
     author='Ian Bicking',

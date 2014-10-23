@@ -45,18 +45,12 @@ def header_docstring(header, rfc_section):
         header, rfc_section, link)
 
 
-def warn_deprecation(text, version, stacklevel): # pragma: no cover
+def warn_deprecation(text, version, stacklevel):
     # version specifies when to start raising exceptions instead of warnings
-    if version == '1.2':
+    if version in ('1.2', '1.3', '1.4'):
         raise DeprecationWarning(text)
-    elif version == '1.3':
-        cls = DeprecationWarning
     else:
         cls = DeprecationWarning
-        warnings.warn("Unknown warn_deprecation version arg: %r" % version,
-            RuntimeWarning,
-            stacklevel=1
-        )
     warnings.warn(text, cls, stacklevel=stacklevel+1)
 
 status_reasons = {
@@ -135,3 +129,36 @@ status_generic_reasons = {
     4: 'Unknown Client Error',
     5: 'Unknown Server Error',
 }
+
+try:
+    # py3.3+ have native comparison support
+    from hmac import compare_digest
+except ImportError:
+    compare_digest = None
+
+def strings_differ(string1, string2):
+    """Check whether two strings differ while avoiding timing attacks.
+
+    This function returns True if the given strings differ and False
+    if they are equal.  It's careful not to leak information about *where*
+    they differ as a result of its running time, which can be very important
+    to avoid certain timing-related crypto attacks:
+
+        http://seb.dbzteam.org/crypto/python-oauth-timing-hmac.pdf
+
+    """
+    len_eq = len(string1) == len(string2)
+    if len_eq:
+        invalid_bits = 0
+        left = string1
+    else:
+        invalid_bits = 1
+        left = string2
+    right = string2
+
+    if compare_digest is not None: # pragma: nocover (Python 3.3+ only)
+        invalid_bits += not compare_digest(left, right)
+    else:
+        for a, b in zip(left, right):
+            invalid_bits += a != b
+    return invalid_bits != 0

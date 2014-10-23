@@ -1,14 +1,90 @@
 News
 ====
 
-Next release
-------------
+1.4 (2013-05-14)
+----------------
+
+Features
+~~~~~~~~
+
+- Remove ``webob.__version__``, the version number had not been kept in sync
+  with the official pkg version.  To obtain the WebOb version number, use
+  ``pkg_resources.get_distribution('webob').version`` instead.
+
+Bug Fixes
+~~~~~~~~~
+
+- Fix a bug in ``EmptyResponse`` that prevents it from setting self.close as
+  appropriate due to testing truthiness of object rather than if it is
+  something other than ``None``.
+
+- Fix a bug in ``SignedSerializer`` preventing secrets from containing
+  higher-order characters. See https://github.com/Pylons/webob/issues/136
+
+- Use the ``hmac.compare_digest`` method when available for constant-time
+  comparisons.
+
+1.3.1 (2013-12-13)
+------------------
+
+Bug Fixes
+~~~~~~~~~
+
+- Fix a bug in ``SignedCookieProfile`` whereby we didn't keep the original
+  serializer around, this would cause us to have ``SignedSerializer`` be added on
+  top of a ``SignedSerializer`` which would cause it to be run twice when
+  attempting to verify a cookie.  See https://github.com/Pylons/webob/pull/127
+
+Backwards Incompatibilities
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- When ``CookieProfile.get_value`` and ``SignedCookieProfile.get_value`` fails
+  to deserialize a badly encoded value, we now return ``None`` as if the cookie
+  was never set in the first place instead of allowing a ``ValueError`` to be
+  raised to the calling code.  See https://github.com/Pylons/webob/pull/126
+
+1.3 (2013-12-10)
+----------------
+
+Features
+~~~~~~~~
+
+- Added a read-only ``domain`` property to ``BaseRequest``.  This property
+  returns the domain portion of the host value.  For example, if the
+  environment contains an ``HTTP_HOST`` value of ``foo.example.com:8000``,
+  ``request.domain`` will return ``foo.example.com``.
+
+- Added five new APIs: ``webob.cookies.CookieProfile``,
+  ``webob.cookies.SignedCookieProfile``, ``webob.cookies.JSONSerializer`` and
+  ``webob.cookies.SignedSerializer``, and ``webob.cookies.make_cookie``.  These
+  APIs are convenience APIs for generating and parsing cookie headers as well
+  as dealing with signing cookies.
+
+- Cookies generated via webob.cookies quoted characters in cookie values that
+  did not need to be quoted per RFC 6265.  The following characters are no
+  longer quoted in cookie values: ``~/=<>()[]{}?@`` .  The full set of
+  non-letter-or-digit unquoted cookie value characters is now
+  ``!#$%&'*+-.^_`|~/: =<>()[]{}?@``.  See
+  http://tools.ietf.org/html/rfc6265#section-4.1.1 for more information.
+
+- Cookie names are now restricted to the set of characters expected by RFC
+  6265.  Previously they could contain unsupported characters such as ``/``.
+
+- Older versions of Webob escaped the doublequote to ``\"`` and the backslash
+  to ``\\`` when quoting cookie values.  Now, instead, cookie serialization
+  generates ``\042`` for the doublequote and ``\134`` for the backslash. This
+  is what is expected as per RFC 6265.  Note that old cookie values that do
+  have the older style quoting in them will still be unquoted correctly,
+  however.
 
 - Added support for draft status code 451 ("Unavailable for Legal Reasons").
   See http://tools.ietf.org/html/draft-tbray-http-legally-restricted-status-00
 
 - Added status codes 428, 429, 431 and 511 to ``util.status_reasons`` (they
   were already present in a previous release as ``webob.exc`` exceptions).
+
+Bug Fixes
+~~~~~~~~~
 
 - MIMEAccept happily parsed malformed wildcard strings like "image/pn*" at
   parse time, but then threw an AssertionError during matching.  See
@@ -20,7 +96,7 @@ Next release
 - Allow query strings attached to PATCH requests to populate request.params.
   See https://github.com/Pylons/webob/pull/106
 
-- Added Pyton 3.3 trove classifier.
+- Added Python 3.3 trove classifier.
 
 1.2.3
 ------------
