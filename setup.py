@@ -1,6 +1,6 @@
 from setuptools import setup
 
-version = '1.4moriyoshi0'
+version = '1.4.post1'
 
 testing_extras = ['nose', 'coverage']
 
