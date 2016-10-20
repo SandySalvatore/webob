@@ -119,6 +119,17 @@ status_reasons = {
     507: 'Insufficient Storage',
     510: 'Not Extended',
     511: 'Network Authentication Required',
+
+    # Optional status
+    700: 'Additional Information 1',
+    701: 'Additional Information 1',
+    702: 'Additional Information 1',
+    800: 'Additional Information 1',
+    801: 'Additional Information 1',
+    802: 'Additional Information 1',
+    900: 'Additional Information 1',
+    901: 'Additional Information 1',
+    902: 'Additional Information 1',
 }
 
 # generic class responses as per RFC2616

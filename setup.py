@@ -1,6 +1,6 @@
 from setuptools import setup
 
-version = '1.4.post1'
+version = '1.4.post2'
 
 testing_extras = ['nose', 'coverage']
 
