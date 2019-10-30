@@ -1174,7 +1174,8 @@ class BaseRequest(object):
 
     def as_text(self):
         bytes = self.as_bytes()
-        return bytes.decode(self.charset)
+        return bytes
+        #return bytes.decode(self.charset)
 
     __str__ = as_text
 
